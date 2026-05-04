@@ -3,3 +3,6 @@ node_modules
 .env.local
 data
 public/generated
+
+# clerk configuration (can include secrets)
+/.clerk/
