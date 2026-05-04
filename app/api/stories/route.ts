@@ -43,13 +43,16 @@ export async function POST(req: Request) {
       ? await cloneVoiceFromDataUrl(body.voiceSampleDataUrl, `${body.kidName} story narrator`)
       : process.env.RESEMBLE_DEFAULT_VOICE_UUID;
 
-    story = { ...story, ...generated, voiceUuid };
+    const maxPages = Number(process.env.MAX_STORY_PAGES || generated.pages.length);
+    const pagesToGenerate = generated.pages.slice(0, Math.max(1, maxPages));
+
+    story = { ...story, ...generated, pages: [], voiceUuid };
     story.coverImageUrl = await generateImage(generated.coverPrompt, id, "cover");
     story.coverAudioUrl = voiceUuid ? await createVoiceOver(`${generated.title}. ${generated.dedication}`, voiceUuid, id, "cover") : undefined;
 
     story.pages = [];
-    for (let i = 0; i < generated.pages.length; i++) {
-      const page = generated.pages[i];
+    for (let i = 0; i < pagesToGenerate.length; i++) {
+      const page = pagesToGenerate[i];
       const imageUrl = await generateImage(page.imagePrompt, id, `page-${i + 1}`);
       const audioUrl = voiceUuid ? await createVoiceOver(page.text, voiceUuid, id, `page-${i + 1}`) : undefined;
       story.pages.push({ pageNumber: i + 1, text: page.text, imagePrompt: page.imagePrompt, imageUrl, audioUrl });

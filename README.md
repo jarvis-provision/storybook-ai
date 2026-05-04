@@ -24,10 +24,10 @@ Required for real generation:
 ```bash
 OPENAI_API_KEY=...
 RESEMBLE_API_KEY=...
-RESEMBLE_PROJECT_UUID=...
-RESEMBLE_DEFAULT_VOICE_UUID=... # provide this when ready
+RESEMBLE_DEFAULT_VOICE_UUID=... # default narrator voice
 APP_BASE_URL=http://localhost:3000
 SESSION_SECRET=some-long-random-string
+MAX_STORY_PAGES=1 # optional: local smoke tests only
 ```
 
 Without keys, the app runs in mock mode for text/images and skips audio.
@@ -36,5 +36,5 @@ Without keys, the app runs in mock mode for text/images and skips audio.
 
 - Replace cookie demo auth with Clerk, Auth.js, or Supabase Auth.
 - Move JSON persistence and generated files to Postgres/S3 or similar.
-- Resemble clone endpoint can vary by account/plan; `lib/resemble.ts` isolates that integration.
+- Resemble uses synchronous synthesis (`https://f.cluster.resemble.ai/synthesize`) and voice creation/recording/build endpoints for clone flow.
 - For long jobs, move `/api/stories` work to a queue (Inngest, Trigger.dev, BullMQ) and poll job status.
