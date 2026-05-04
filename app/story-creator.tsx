@@ -1,5 +1,6 @@
 "use client";
 
+import { SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
 import { FormEvent, useRef, useState } from "react";
 
 const storyTypes = [
@@ -11,7 +12,6 @@ const storyTypes = [
 ];
 
 export default function StoryCreator({ email }: { email: string | null }) {
-  const [loginEmail, setLoginEmail] = useState(email || "");
   const [kidName, setKidName] = useState("");
   const [storyType, setStoryType] = useState("bedtime");
   const [voiceMode, setVoiceMode] = useState<"default" | "clone">("default");
@@ -20,21 +20,6 @@ export default function StoryCreator({ email }: { email: string | null }) {
   const [message, setMessage] = useState("");
   const recorder = useRef<MediaRecorder | null>(null);
   const chunks = useRef<Blob[]>([]);
-
-  async function login(event?: FormEvent) {
-    event?.preventDefault();
-    if (!loginEmail || busy) return;
-    setBusy(true);
-    setMessage("Signing you in…");
-    try {
-      const res = await fetch("/api/auth", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: loginEmail }) });
-      if (!res.ok) throw new Error("Could not start session");
-      location.reload();
-    } catch (error) {
-      setBusy(false);
-      setMessage(error instanceof Error ? error.message : "Something went wrong signing in.");
-    }
-  }
 
   async function startRecording() {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -82,18 +67,22 @@ export default function StoryCreator({ email }: { email: string | null }) {
       <span className="sparkle-dot">SP</span>
       <div>
         <h2>{email ? "Create a book" : "Create your account"}</h2>
-        <p>{email ? "Choose the child, mood, and narrator." : "Enter your email to save books and create share links."}</p>
+        <p>{email ? "Choose the child, mood, and narrator." : "Sign up or sign in with Clerk to save books and create share links."}</p>
       </div>
+      {email && <div className="user-menu"><UserButton /></div>}
     </div>
 
-    {!email ? <form className="form" onSubmit={login}>
-      <label className="field">Email address
-        <input className="input" type="email" value={loginEmail} onChange={e => setLoginEmail(e.target.value)} placeholder="you@example.com" autoComplete="email" required />
-      </label>
-      {message && <div className="notice">{busy && <span className="spinner" />} {message}</div>}
-      <button className="btn" type="submit" disabled={busy}>Create account / continue</button>
-      <p className="helper-text">This prototype uses a lightweight email session. Production should use Clerk, Auth.js, or Supabase Auth.</p>
-    </form> : <form className="form" onSubmit={createStory}>
+    {!email ? <div className="form">
+      <div className="auth-actions">
+        <SignUpButton mode="modal">
+          <button className="btn" type="button">Create account</button>
+        </SignUpButton>
+        <SignInButton mode="modal">
+          <button className="btn secondary" type="button">Sign in</button>
+        </SignInButton>
+      </div>
+      <p className="helper-text">Clerk handles email/password auth, verification, sessions, and user management. No prototype password storage anymore.</p>
+    </div> : <form className="form" onSubmit={createStory}>
       <label className="field">Child’s name
         <input className="input big-input" value={kidName} onChange={e => setKidName(e.target.value)} placeholder="Amina" required />
       </label>

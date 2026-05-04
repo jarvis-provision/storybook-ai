@@ -115,5 +115,31 @@ export default async function Home() {
         </Link>)}
       </div>
     </section>}
+
+    <footer className="site-footer">
+      <div className="container footer-grid">
+        <div>
+          <div className="footer-brand"><span className="brand-mark">SP</span><strong>StoryPanda</strong></div>
+          <p>Personalized read‑along storybooks with original artwork, narration, and private family sharing.</p>
+        </div>
+        <div>
+          <strong>Product</strong>
+          <a href="#create">Create</a>
+          <a href="#example">Sample book</a>
+          <a href="/">Library</a>
+        </div>
+        <div>
+          <strong>Pipeline</strong>
+          <span>GPT story generation</span>
+          <span>OpenAI image pages</span>
+          <span>Resemble narration</span>
+        </div>
+        <div>
+          <strong>Prototype note</strong>
+          <span>Clerk handles authentication.</span>
+          <span>Move generated files to durable storage before production.</span>
+        </div>
+      </div>
+    </footer>
   </main>;
 }
