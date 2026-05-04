@@ -2,8 +2,8 @@ import "./globals.css";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Moonbeam Storybook",
-  description: "Personalized children’s storybooks with AI art and voice narration."
+  title: "StoryPanda",
+  description: "Personalized children’s storybooks with AI art, friendly narration, and shareable pages."
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

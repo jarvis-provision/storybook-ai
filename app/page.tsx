@@ -35,7 +35,7 @@ export default async function Home() {
   return <main>
     <section className="container hero-shell">
       <div className="nav-pill">
-        <strong>Moonbeam Storybook</strong>
+        <strong>StoryPanda</strong>
         <span>AI picture books for little heroes</span>
       </div>
 
@@ -45,7 +45,7 @@ export default async function Home() {
           <h1>A bedtime story where your kid is the main character.</h1>
           <p className="lead">Create a narrated children’s picture book in minutes: a custom story, page-by-page artwork, and a voiceover your family can listen to together.</p>
           <div className="hero-actions">
-            <a className="btn" href="#create">Create a storybook</a>
+            <a className="btn" href="#create">Create a StoryPanda book</a>
             <a className="btn secondary" href="#example">See an example</a>
           </div>
           <div className="trust-row" aria-label="Pipeline features">
@@ -100,7 +100,7 @@ export default async function Home() {
       <div className="section-heading-row">
         <div>
           <span className="eyebrow">Your library</span>
-          <h2>Storybooks you’ve made</h2>
+          <h2>StoryPanda books you’ve made</h2>
         </div>
         <a className="btn secondary" href="#create">Make another</a>
       </div>

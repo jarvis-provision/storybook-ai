@@ -1,6 +1,6 @@
-# Moonbeam Storybook
+# StoryPanda
 
-A Next.js prototype for personalized children’s storybooks:
+A Next.js prototype for StoryPanda — personalized children’s storybooks with AI art and narration:
 
 1. Landing page asks for kid name and story type.
 2. User logs in via a simple cookie session.

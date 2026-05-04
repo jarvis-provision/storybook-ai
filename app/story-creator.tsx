@@ -71,7 +71,7 @@ export default function StoryCreator({ email }: { email: string | null }) {
       <span className="sparkle-dot">✦</span>
       <div>
         <h2>{email ? "Build tonight’s book" : "Start your first book"}</h2>
-        <p>{email ? "Three choices, then we generate the keepsake." : "Log in to save and share your generated storybooks."}</p>
+        <p>{email ? "Three choices, then we generate the keepsake." : "Log in to save and share your generated StoryPanda books."}</p>
       </div>
     </div>
 
@@ -118,7 +118,7 @@ export default function StoryCreator({ email }: { email: string | null }) {
 
       {message && <div className="notice">{busy && <span className="spinner" />} {message}</div>}
       <button className="btn generate-btn" disabled={busy || !kidName || (voiceMode === "clone" && !voiceSample)} onClick={createStory}>
-        {busy ? "Creating your book…" : "Generate storybook ✨"}
+        {busy ? "Creating your book…" : "Generate StoryPanda book ✨"}
       </button>
     </div>}
   </div>;
