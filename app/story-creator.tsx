@@ -1,13 +1,13 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { FormEvent, useRef, useState } from "react";
 
 const storyTypes = [
-  { value: "bedtime", label: "Cozy bedtime", icon: "🌙" },
-  { value: "adventure", label: "Brave adventure", icon: "🧭" },
-  { value: "kindness", label: "Kindness & friendship", icon: "🤝" },
-  { value: "learning", label: "Learning quest", icon: "🔎" },
-  { value: "silly", label: "Silly giggles", icon: "🫧" }
+  { value: "bedtime", label: "Bedtime", detail: "Calm and cozy" },
+  { value: "adventure", label: "Adventure", detail: "Brave and curious" },
+  { value: "kindness", label: "Kindness", detail: "Warm and thoughtful" },
+  { value: "learning", label: "Learning", detail: "Curious and educational" },
+  { value: "silly", label: "Silly", detail: "Playful and funny" }
 ];
 
 export default function StoryCreator({ email }: { email: string | null }) {
@@ -21,10 +21,19 @@ export default function StoryCreator({ email }: { email: string | null }) {
   const recorder = useRef<MediaRecorder | null>(null);
   const chunks = useRef<Blob[]>([]);
 
-  async function login() {
+  async function login(event?: FormEvent) {
+    event?.preventDefault();
+    if (!loginEmail || busy) return;
     setBusy(true);
-    await fetch("/api/auth", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: loginEmail }) });
-    location.reload();
+    setMessage("Signing you in…");
+    try {
+      const res = await fetch("/api/auth", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: loginEmail }) });
+      if (!res.ok) throw new Error("Could not start session");
+      location.reload();
+    } catch (error) {
+      setBusy(false);
+      setMessage(error instanceof Error ? error.message : "Something went wrong signing in.");
+    }
   }
 
   async function startRecording() {
@@ -48,9 +57,11 @@ export default function StoryCreator({ email }: { email: string | null }) {
     setMessage("Voice sample captured. We’ll use it to create a story narrator.");
   }
 
-  async function createStory() {
+  async function createStory(event?: FormEvent) {
+    event?.preventDefault();
+    if (busy || !kidName || (voiceMode === "clone" && !voiceSample)) return;
     setBusy(true);
-    setMessage("Creating the story, painting the pages, and recording narration. Real magic takes a minute…");
+    setMessage("Creating the story, illustrations, and narration. This can take a few minutes…");
     const res = await fetch("/api/stories", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -68,25 +79,26 @@ export default function StoryCreator({ email }: { email: string | null }) {
 
   return <div className="creator-card card">
     <div className="creator-header">
-      <span className="sparkle-dot">✦</span>
+      <span className="sparkle-dot">SP</span>
       <div>
-        <h2>{email ? "Build tonight’s book" : "Start your first book"}</h2>
-        <p>{email ? "Three choices, then we generate the keepsake." : "Log in to save and share your generated StoryPanda books."}</p>
+        <h2>{email ? "Create a book" : "Create your account"}</h2>
+        <p>{email ? "Choose the child, mood, and narrator." : "Enter your email to save books and create share links."}</p>
       </div>
     </div>
 
-    {!email ? <div className="form">
-      <label className="field">Your email
-        <input className="input" type="email" value={loginEmail} onChange={e => setLoginEmail(e.target.value)} placeholder="you@example.com" />
+    {!email ? <form className="form" onSubmit={login}>
+      <label className="field">Email address
+        <input className="input" type="email" value={loginEmail} onChange={e => setLoginEmail(e.target.value)} placeholder="you@example.com" autoComplete="email" required />
       </label>
-      <button className="btn" disabled={busy || !loginEmail} onClick={login}>Continue to story builder →</button>
-      <p className="helper-text">Prototype login for now. Production should use Clerk, Auth.js, or Supabase Auth.</p>
-    </div> : <div className="form">
-      <label className="field">Who is this story for?
-        <input className="input big-input" value={kidName} onChange={e => setKidName(e.target.value)} placeholder="Amina" />
+      {message && <div className="notice">{busy && <span className="spinner" />} {message}</div>}
+      <button className="btn" type="submit" disabled={busy}>Create account / continue</button>
+      <p className="helper-text">This prototype uses a lightweight email session. Production should use Clerk, Auth.js, or Supabase Auth.</p>
+    </form> : <form className="form" onSubmit={createStory}>
+      <label className="field">Child’s name
+        <input className="input big-input" value={kidName} onChange={e => setKidName(e.target.value)} placeholder="Amina" required />
       </label>
 
-      <div className="field">Pick the story mood
+      <div className="field">Story mood
         <div className="choice-grid">
           {storyTypes.map(type => <button
             key={type.value}
@@ -94,8 +106,8 @@ export default function StoryCreator({ email }: { email: string | null }) {
             className={`choice-card ${storyType === type.value ? "selected" : ""}`}
             onClick={() => setStoryType(type.value)}
           >
-            <span>{type.icon}</span>
-            {type.label}
+            <strong>{type.label}</strong>
+            <small>{type.detail}</small>
           </button>)}
         </div>
       </div>
@@ -111,16 +123,16 @@ export default function StoryCreator({ email }: { email: string | null }) {
         <p>Record a quick, clear sample. The warmer and quieter the room, the better the narrator.</p>
         <blockquote className="sample-script">“This is my storytelling voice. I read gently, clearly, and warmly for a children&apos;s bedtime story.”</blockquote>
         <div className="record-actions">
-          <button className="btn secondary" type="button" onClick={startRecording}>● Record</button>
-          <button className="btn secondary" type="button" onClick={stopRecording}>Stop & use sample</button>
+          <button className="btn secondary" type="button" onClick={startRecording}>Start recording</button>
+          <button className="btn secondary" type="button" onClick={stopRecording}>Use sample</button>
         </div>
         {voiceSample && <audio controls src={voiceSample} />}
       </div>}
 
       {message && <div className="notice">{busy && <span className="spinner" />} {message}</div>}
-      <button className="btn generate-btn" disabled={busy || !kidName || (voiceMode === "clone" && !voiceSample)} onClick={createStory}>
-        {busy ? "Creating your book…" : "Generate StoryPanda book ✨"}
+      <button className="btn generate-btn" type="submit" disabled={busy || (voiceMode === "clone" && !voiceSample)}>
+        {busy ? "Creating your book…" : "Generate book"}
       </button>
-    </div>}
+    </form>}
   </div>;
 }
