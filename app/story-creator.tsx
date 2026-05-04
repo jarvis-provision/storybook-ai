@@ -40,7 +40,7 @@ export default function StoryCreator({ email }: { email: string | null }) {
       stream.getTracks().forEach(t => t.stop());
     };
     recorder.current.start();
-    setMessage("Recording… read a warm sentence for 10–20 seconds, like: ‘Once upon a time, the stars tucked themselves into bed.’");
+    setMessage("Recording… please read the sample sentence shown below clearly once or twice.");
   }
 
   function stopRecording() {
@@ -109,6 +109,7 @@ export default function StoryCreator({ email }: { email: string | null }) {
 
       {voiceMode === "clone" && <div className="recording-panel">
         <p>Record a quick, clear sample. The warmer and quieter the room, the better the narrator.</p>
+        <blockquote className="sample-script">“This is my storytelling voice. I read gently, clearly, and warmly for a children&apos;s bedtime story.”</blockquote>
         <div className="record-actions">
           <button className="btn secondary" type="button" onClick={startRecording}>● Record</button>
           <button className="btn secondary" type="button" onClick={stopRecording}>Stop & use sample</button>
